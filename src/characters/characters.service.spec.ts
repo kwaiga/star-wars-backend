@@ -33,7 +33,34 @@ describe('CharactersService', () => {
     await service.create(createCharacterDto);
     const resultArr: Character[] = await service.findAll();
     expect(resultArr.length).toEqual(1);
+    expect(resultArr[0].id).toBeDefined();
     expect(resultArr[0].name).toEqual('Han Solo');
     expect(resultArr[0].race).toEqual('human');
+  });
+
+  it('Fill out db', async () => {
+    const createCharacterDto: CreateCharacterDto = {
+      name: 'Chewbacca',
+      race: 'wookie',
+    };
+    await service.create(createCharacterDto);
+
+    const yoda: CreateCharacterDto = {
+      name: 'yoda',
+      race: 'tridactyl',
+    };
+    await service.create(yoda);
+
+    const hanSolo: CreateCharacterDto = {
+      name: 'Han Solo',
+      race: 'human',
+    };
+    await service.create(hanSolo);
+
+    const stormtrooper: CreateCharacterDto = {
+      name: 'Stormtrooper',
+      race: 'human',
+    };
+    await service.create(stormtrooper);
   });
 });
