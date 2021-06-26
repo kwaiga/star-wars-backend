@@ -14,6 +14,13 @@ describe('CharactersController', () => {
         ...dto,
       };
     }),
+
+    update: jest.fn((id, dto) => ({
+      id,
+      ...dto,
+    })),
+
+    remove: jest.fn((id) => ({})),
   };
 
   beforeEach(async () => {
@@ -43,19 +50,32 @@ describe('CharactersController', () => {
       name: 'Stormtrooper',
       race: 'human',
     });
+
+    expect(mockCharactersService.create).toHaveBeenCalled();
   });
 
-  expect(mockCharactersService.create).toHaveBeenCalled();
-});
+  it('should return an array of all characters', async () => {
+    const characterRepository = new Repository<Character>();
 
-it('should return an array of all characters', async () => {
-  const characterRepository = new Repository<Character>();
+    const charactersService = new CharactersService(characterRepository);
+    const charactersController = new CharactersController(charactersService);
 
-  const charactersService = new CharactersService(characterRepository);
-  const charactersController = new CharactersController(charactersService);
+    const result = Promise['test'];
+    jest.spyOn(charactersService, 'findAll').mockImplementation(() => result);
 
-  const result = Promise['test'];
-  jest.spyOn(charactersService, 'findAll').mockImplementation(() => result);
+    expect(await charactersController.findAll()).toBe(result);
+  });
 
-  expect(await charactersController.findAll()).toBe(result);
+  it('should update character', () => {
+    const dto = { name: 'Stormtrooper2', race: 'human' };
+    expect(controller.update(1, dto)).toBeDefined();
+    expect(controller.update(1, dto)).toEqual({
+      id: 1,
+      ...dto,
+    });
+  });
+
+  it('should delete character', () => {
+    expect(controller.remove(1)).toEqual({});
+  });
 });

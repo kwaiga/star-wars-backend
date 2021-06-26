@@ -22,7 +22,7 @@ describe('CharactersService', () => {
   });
 
   afterEach(async () => {
-    await service.removeAll();
+    // await service.removeAll();
   });
 
   it('Should find created character', async () => {

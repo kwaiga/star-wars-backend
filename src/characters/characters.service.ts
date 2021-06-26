@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
 import { Repository } from 'typeorm';
@@ -13,6 +18,15 @@ export class CharactersService {
   ) {}
 
   async create(createCharacterDto: CreateCharacterDto) {
+    const characterByName = await this.characterRepository.findOne({
+      name: createCharacterDto.name,
+    });
+    if (characterByName) {
+      throw new HttpException(
+        'This character already exist, try with another one',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const newCharacter = new Character();
     Object.assign(newCharacter, createCharacterDto);
     return await this.characterRepository.save(newCharacter);
@@ -22,16 +36,26 @@ export class CharactersService {
     return await this.characterRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} character`;
+  async findOne(id: number): Promise<Character> {
+    const character = await this.characterRepository.findOne(id);
+    if (!character) {
+      throw new HttpException('ID does not exist', HttpStatus.BAD_REQUEST);
+    }
+    return character;
   }
 
-  update(id: number, updateCharacterDto: UpdateCharacterDto) {
-    return `This action updates a #${id} character`;
+  async update(
+    id: number,
+    updateCharacterDto: UpdateCharacterDto,
+  ): Promise<Character> {
+    const character = await this.findOne(id);
+    Object.assign(character, updateCharacterDto);
+    return await this.characterRepository.save(character);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} character`;
+  async remove(id: number): Promise<Character> {
+    const character = await this.findOne(id);
+    return await this.characterRepository.remove(character);
   }
 
   async removeAll() {
