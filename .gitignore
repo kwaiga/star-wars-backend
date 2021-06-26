@@ -35,3 +35,6 @@ lerna-debug.log*
 
 #CONFIG
 .env
+
+#NOTES
+notes.txt
