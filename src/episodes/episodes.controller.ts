@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { UpdateEpisodeDto } from './dto/update-episode.dto';
+import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('STAR WARS EPISODES')
 @Controller('episodes')
 export class EpisodesController {
   constructor(private readonly episodesService: EpisodesService) {}
@@ -18,17 +29,23 @@ export class EpisodesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.episodesService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEpisodeDto: UpdateEpisodeDto) {
+  @ApiResponse({ status: 204, description: 'Episode updated successfully' })
+  @ApiBadRequestResponse()
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEpisodeDto: UpdateEpisodeDto,
+  ) {
     return this.episodesService.update(+id, updateEpisodeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @ApiResponse({ status: 200, description: 'Episode deleted successfully' })
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.episodesService.remove(+id);
   }
 }

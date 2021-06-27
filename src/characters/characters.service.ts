@@ -17,7 +17,7 @@ export class CharactersService {
     private readonly characterRepository: Repository<Character>,
   ) {}
 
-  async create(createCharacterDto: CreateCharacterDto) {
+  async create(createCharacterDto: CreateCharacterDto): Promise<Character> {
     const characterByName = await this.characterRepository.findOne({
       name: createCharacterDto.name,
     });
@@ -58,7 +58,7 @@ export class CharactersService {
     return await this.characterRepository.remove(character);
   }
 
-  async removeAll() {
+  async removeAll(): Promise<void> {
     return await this.characterRepository.clear();
   }
 }
