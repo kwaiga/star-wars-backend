@@ -65,4 +65,17 @@ export class CharactersController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.charactersService.remove(+id);
   }
+
+  @Patch(':characterId/episode/:episodeId')
+  @ApiResponse({ status: 204, description: 'resource updated successfully' })
+  @ApiBadRequestResponse()
+  updateWitchEpisode(
+    @Param('characterId', ParseIntPipe) characterId: number,
+    @Param('episodeId', ParseIntPipe) episodeId: number,
+  ) {
+    return this.charactersService.updateCharacterWIthEpisode(
+      +characterId,
+      +episodeId,
+    );
+  }
 }

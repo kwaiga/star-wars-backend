@@ -1,12 +1,7 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Episode } from '../../episodes/entities/episode.entity';
+import { JoinColumn } from 'typeorm';
 
 @Entity({ name: 'characters' })
 export class Character {
@@ -21,7 +16,8 @@ export class Character {
   @Column()
   race: string;
 
-  @ManyToMany((type) => Episode, (episode) => episode.name)
-  @JoinTable()
-  episodes: Episode[];
+  @OneToOne((type) => Episode, (episode) => episode.name)
+  @ApiProperty({ default: [] })
+  @JoinColumn({ name: 'episodeName' })
+  episodes: Episode;
 }

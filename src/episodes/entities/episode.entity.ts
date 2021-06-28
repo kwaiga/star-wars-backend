@@ -1,6 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Character } from '../../characters/entities/character.entity';
 
 @Entity({ name: 'episodes' })
 export class Episode {
@@ -10,7 +14,4 @@ export class Episode {
   @ApiProperty()
   @Column()
   name: string;
-
-  @ManyToMany((type) => Character, (character) => character.name)
-  characters: Character[];
 }

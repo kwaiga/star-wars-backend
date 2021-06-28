@@ -34,7 +34,10 @@ export class EpisodesService {
   async findOne(id: number): Promise<Episode> {
     const episode = await this.episodeRepository.findOne(id);
     if (!episode) {
-      throw new HttpException('ID does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Episode ID does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return episode;
   }
