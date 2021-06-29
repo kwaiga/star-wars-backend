@@ -70,7 +70,15 @@ export class CharactersService {
   ): Promise<Character> {
     const characterToUpdate: Character = await this.findOne(characterID);
     const episode: Episode = await this.episodeRepository.findOne(episodeID);
-    characterToUpdate.episodes = episode;
+    const existingCharactersRelations = await this.characterRepository.findOne(
+      await this.characterRepository.findOne(characterID),
+      { relations: ['episodes'] },
+    );
+    const arrayOfExistingEpisodes = existingCharactersRelations.episodes;
+    const arrayOfEpisodes: Episode[] = [];
+    arrayOfEpisodes.push(...arrayOfExistingEpisodes, episode);
+    characterToUpdate.episodes = arrayOfEpisodes;
+    console.log(characterToUpdate.episodes);
     return await this.characterRepository.save(characterToUpdate);
   }
 }

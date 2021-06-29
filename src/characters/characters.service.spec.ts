@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Character } from './entities/character.entity';
 import ormconfig from '../ormconfig';
 import { CreateCharacterDto } from './dto/create-character.dto';
+import { Episode } from '../episodes/entities/episode.entity';
 
 describe('CharactersService', () => {
   let service: CharactersService;
@@ -12,6 +13,7 @@ describe('CharactersService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forFeature([Character]),
+        TypeOrmModule.forFeature([Episode]),
         TypeOrmModule.forRoot(ormconfig),
       ],
       providers: [CharactersService],
