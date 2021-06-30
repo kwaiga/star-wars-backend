@@ -16,10 +16,11 @@ export class UpdateCharacterDto extends PartialType(CreateCharacterDto) {
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty()
   @IsAlphanumeric()
   @MinLength(1)
   @MaxLength(50)
-  @ApiProperty()
   @IsNotEmpty()
   race: string;
+
 }

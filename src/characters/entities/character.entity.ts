@@ -21,8 +21,7 @@ export class Character {
   @Column()
   race: string;
 
-  @ManyToMany((type) => Episode, (episode) => episode.name, {
-  })
+  @ManyToMany((type) => Episode, (episode) => episode.name, {})
   @ApiProperty()
   @JoinTable({ name: 'episodeName' })
   episodes: Episode[];

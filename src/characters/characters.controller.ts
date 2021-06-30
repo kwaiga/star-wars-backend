@@ -43,6 +43,13 @@ export class CharactersController {
     return this.charactersService.findAll();
   }
 
+  @Get('episodes')
+  @ApiOkResponse({ type: [Character] })
+  @Get()
+  findWithEpisodes() {
+    return this.charactersService.findWithEpisodes();
+  }
+
   @Get(':id')
   @ApiBadRequestResponse()
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -66,16 +73,12 @@ export class CharactersController {
     return this.charactersService.remove(+id);
   }
 
-  @Patch(':characterId/episode/:episodeId')
+  @Get(':characterId/episodes')
   @ApiResponse({ status: 204, description: 'resource updated successfully' })
   @ApiBadRequestResponse()
-  updateWitchEpisode(
-    @Param('characterId', ParseIntPipe) characterId: number,
-    @Param('episodeId', ParseIntPipe) episodeId: number,
-  ) {
-    return this.charactersService.updateCharacterWIthEpisode(
-      +characterId,
-      +episodeId,
-    );
+  updateWitchEpisode(@Param('characterId', ParseIntPipe) characterId: number) {
+    return this.charactersService.findOneWithEpisode(+characterId);
   }
+
+
 }

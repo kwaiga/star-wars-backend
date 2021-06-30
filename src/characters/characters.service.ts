@@ -31,8 +31,14 @@ export class CharactersService {
     return await this.characterRepository.save(newCharacter);
   }
 
+  async findWithEpisodes(): Promise<Character[]> {
+    return await this.characterRepository.find({
+      relations: ['episodes'],
+    });
+  }
+
   async findAll(): Promise<Character[]> {
-    return await this.characterRepository.find({ relations: ['episodes'] });
+    return await this.characterRepository.find();
   }
 
   async findOne(id: number): Promise<Character> {
@@ -64,21 +70,34 @@ export class CharactersService {
     return await this.characterRepository.clear();
   }
 
+  async findOneWithEpisode(id: number): Promise<Character> {
+    const character = await this.characterRepository.findOne(id, {
+      relations: ['episodes'],
+    });
+    if (!character) {
+      throw new HttpException(
+        'Character ID does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return character;
+  }
+
   async updateCharacterWIthEpisode(
     characterID: number,
     episodeID: number,
   ): Promise<Character> {
     const characterToUpdate: Character = await this.findOne(characterID);
     const episode: Episode = await this.episodeRepository.findOne(episodeID);
-    const existingCharactersRelations = await this.characterRepository.findOne(
-      await this.characterRepository.findOne(characterID),
-      { relations: ['episodes'] },
+    const existingCharactersRelations = await this.findOneWithEpisode(
+      characterID,
     );
     const arrayOfExistingEpisodes = existingCharactersRelations.episodes;
-    const arrayOfEpisodes: Episode[] = [];
-    arrayOfEpisodes.push(...arrayOfExistingEpisodes, episode);
-    characterToUpdate.episodes = arrayOfEpisodes;
-    console.log(characterToUpdate.episodes);
+    if (!arrayOfExistingEpisodes.includes(episode)) {
+      const arrayOfEpisodes: Episode[] = [];
+      arrayOfEpisodes.push(...arrayOfExistingEpisodes, episode);
+      characterToUpdate.episodes = arrayOfEpisodes;
+    }
     return await this.characterRepository.save(characterToUpdate);
   }
 }
