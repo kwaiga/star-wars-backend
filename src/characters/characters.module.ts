@@ -4,6 +4,7 @@ import { CharactersController } from './characters.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Character } from './entities/character.entity';
 import { Episode } from '../episodes/entities/episode.entity';
+import { EpisodesService } from '../episodes/episodes.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { Episode } from '../episodes/entities/episode.entity';
     TypeOrmModule.forFeature([Episode]),
   ],
   controllers: [CharactersController],
-  providers: [CharactersService],
+  providers: [CharactersService, EpisodesService],
 })
 export class CharactersModule {}

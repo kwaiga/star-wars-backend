@@ -5,14 +5,14 @@ import { Repository } from 'typeorm';
 import { Character } from './entities/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Episode } from '../episodes/entities/episode.entity';
+import { EpisodesService } from '../episodes/episodes.service';
 
 @Injectable()
 export class CharactersService {
   constructor(
     @InjectRepository(Character)
     private readonly characterRepository: Repository<Character>,
-    @InjectRepository(Episode)
-    private readonly episodeRepository: Repository<Episode>,
+    private readonly episodesService: EpisodesService,
   ) {}
 
   async create(createCharacterDto: CreateCharacterDto): Promise<Character> {
@@ -41,7 +41,7 @@ export class CharactersService {
     return await this.characterRepository.find();
   }
 
-  async findOne(id: number): Promise<Character> {
+  async findOneById(id: number): Promise<Character> {
     const character = await this.characterRepository.findOne(id);
     if (!character) {
       throw new HttpException(
@@ -56,13 +56,13 @@ export class CharactersService {
     id: number,
     updateCharacterDto: UpdateCharacterDto,
   ): Promise<Character> {
-    const character = await this.findOne(id);
+    const character = await this.findOneById(id);
     Object.assign(character, updateCharacterDto);
     return await this.characterRepository.save(character);
   }
 
   async remove(id: number): Promise<Character> {
-    const character = await this.findOne(id);
+    const character = await this.findOneById(id);
     return await this.characterRepository.remove(character);
   }
 
@@ -70,7 +70,7 @@ export class CharactersService {
     return await this.characterRepository.clear();
   }
 
-  async findOneWithEpisode(id: number): Promise<Character> {
+  async findOneWithEpisodes(id: number): Promise<Character> {
     const character = await this.characterRepository.findOne(id, {
       relations: ['episodes'],
     });
@@ -83,21 +83,27 @@ export class CharactersService {
     return character;
   }
 
-  async updateCharacterWIthEpisode(
-    characterID: number,
-    episodeID: number,
+  async addEpisodeToCharacter(
+    characterId: number,
+    episodeId: number,
   ): Promise<Character> {
-    const characterToUpdate: Character = await this.findOne(characterID);
-    const episode: Episode = await this.episodeRepository.findOne(episodeID);
-    const existingCharactersRelations = await this.findOneWithEpisode(
-      characterID,
+    const characterToUpdate: Character = await this.findOneById(characterId);
+    const episode: Episode = await this.episodesService.findOneById(episodeId);
+    const existingCharactersRelations = await this.findOneWithEpisodes(
+      characterId,
     );
     const arrayOfExistingEpisodes = existingCharactersRelations.episodes;
-    if (!arrayOfExistingEpisodes.includes(episode)) {
+    const contains = arrayOfExistingEpisodes.some((e) => e.id === episodeId);
+    if (contains) {
+      throw new HttpException(
+        'Those episodes are already assign to characters',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    } else {
       const arrayOfEpisodes: Episode[] = [];
       arrayOfEpisodes.push(...arrayOfExistingEpisodes, episode);
       characterToUpdate.episodes = arrayOfEpisodes;
+      return await this.characterRepository.save(characterToUpdate);
     }
-    return await this.characterRepository.save(characterToUpdate);
   }
 }

@@ -8,7 +8,6 @@ import {
   Delete,
   ParseIntPipe,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { CharactersService } from './characters.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
@@ -37,7 +36,7 @@ export class CharactersController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [Character] })
+  @ApiOkResponse({})
   @Get()
   findAll() {
     return this.charactersService.findAll();
@@ -53,14 +52,16 @@ export class CharactersController {
   @Get(':id')
   @ApiBadRequestResponse()
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.charactersService.findOne(+id);
+    return this.charactersService.findOneById(+id);
   }
 
   @Patch(':id')
   @ApiResponse({ status: 204, description: 'resource updated successfully' })
   @ApiBadRequestResponse()
+  @UsePipes()
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe)
+    id: number,
     @Body() updateCharacterDto: UpdateCharacterDto,
   ) {
     return this.charactersService.update(+id, updateCharacterDto);
@@ -74,11 +75,19 @@ export class CharactersController {
   }
 
   @Get(':characterId/episodes')
-  @ApiResponse({ status: 204, description: 'resource updated successfully' })
+  @ApiResponse({ type: Character })
   @ApiBadRequestResponse()
-  updateWitchEpisode(@Param('characterId', ParseIntPipe) characterId: number) {
-    return this.charactersService.findOneWithEpisode(+characterId);
+  findOneWithEpisodes(@Param('characterId', ParseIntPipe) characterId: number) {
+    return this.charactersService.findOneWithEpisodes(+characterId);
   }
-
-
+  @Post(':characterId/episodes/:episodeId')
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
+  @ApiUnprocessableEntityResponse()
+  addEpisodeToCharacter(
+    @Param('characterId', ParseIntPipe) characterId: number,
+    @Param('episodeId', ParseIntPipe) episodeId: number,
+  ) {
+    return this.charactersService.addEpisodeToCharacter(characterId, episodeId);
+  }
 }

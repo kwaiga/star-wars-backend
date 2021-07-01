@@ -31,7 +31,7 @@ export class EpisodesService {
     return await this.episodeRepository.find();
   }
 
-  async findOne(id: number): Promise<Episode> {
+  async findOneById(id: number): Promise<Episode> {
     const episode = await this.episodeRepository.findOne(id);
     if (!episode) {
       throw new HttpException(
@@ -46,13 +46,13 @@ export class EpisodesService {
     id: number,
     updateEpisodeDto: UpdateEpisodeDto,
   ): Promise<Episode> {
-    const episode = await this.findOne(id);
+    const episode = await this.findOneById(id);
     Object.assign(episode, updateEpisodeDto);
     return await this.episodeRepository.save(episode);
   }
 
   async remove(id: number): Promise<Episode> {
-    const episode = await this.findOne(id);
+    const episode = await this.findOneById(id);
     return await this.episodeRepository.remove(episode);
   }
 

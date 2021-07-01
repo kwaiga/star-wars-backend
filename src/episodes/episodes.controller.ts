@@ -30,7 +30,7 @@ export class EpisodesController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.episodesService.findOne(+id);
+    return this.episodesService.findOneById(+id);
   }
 
   @Patch(':id')

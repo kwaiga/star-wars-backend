@@ -22,5 +22,4 @@ export class UpdateCharacterDto extends PartialType(CreateCharacterDto) {
   @MaxLength(50)
   @IsNotEmpty()
   race: string;
-
 }
