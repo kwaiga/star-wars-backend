@@ -33,8 +33,9 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-#CONFIG
+#CONFIGs
 .env
+.aws/*
 
 #NOTES
 notes.txt
