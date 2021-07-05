@@ -8,6 +8,8 @@ import {
   Delete,
   ParseIntPipe,
   UsePipes,
+  DefaultValuePipe,
+  Query,
 } from '@nestjs/common';
 import { CharactersService } from './characters.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
@@ -21,6 +23,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Character } from './entities/character.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiTags('STAR WARS CHARACTERS')
 @Controller('characters')
@@ -36,10 +39,16 @@ export class CharactersController {
   }
 
   @Get()
-  @ApiOkResponse({})
-  @Get()
-  findAll() {
-    return this.charactersService.findAll();
+  @ApiOkResponse()
+  async index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<Character>> {
+    limit = limit > 10 ? 10 : limit;
+    return this.charactersService.paginate({
+      page,
+      limit,
+    });
   }
 
   @Get('episodes')

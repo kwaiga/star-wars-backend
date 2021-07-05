@@ -5,6 +5,7 @@ import { Character } from './entities/character.entity';
 import ormconfig from '../ormconfig';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { Episode } from '../episodes/entities/episode.entity';
+import { EpisodesService } from '../episodes/episodes.service';
 
 describe('CharactersService', () => {
   let service: CharactersService;
@@ -16,7 +17,7 @@ describe('CharactersService', () => {
         TypeOrmModule.forFeature([Episode]),
         TypeOrmModule.forRoot(ormconfig),
       ],
-      providers: [CharactersService],
+      providers: [CharactersService, EpisodesService],
     }).compile();
 
     service = module.get<CharactersService>(CharactersService);
@@ -64,5 +65,23 @@ describe('CharactersService', () => {
       race: 'human',
     };
     await service.create(stormtrooper);
+
+    const stormtrooper2: CreateCharacterDto = {
+      name: 'Stormtrooper2',
+      race: 'human',
+    };
+    await service.create(stormtrooper2);
+
+    const stormtrooper3: CreateCharacterDto = {
+      name: 'Stormtrooper3',
+      race: 'human',
+    };
+    await service.create(stormtrooper3);
+
+    const stormtrooper4: CreateCharacterDto = {
+      name: 'Stormtrooper4',
+      race: 'human',
+    };
+    await service.create(stormtrooper4);
   });
 });

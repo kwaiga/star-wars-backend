@@ -6,6 +6,8 @@ import { Character } from './entities/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Episode } from '../episodes/entities/episode.entity';
 import { EpisodesService } from '../episodes/episodes.service';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CharactersService {
@@ -105,5 +107,9 @@ export class CharactersService {
       characterToUpdate.episodes = arrayOfEpisodes;
       return await this.characterRepository.save(characterToUpdate);
     }
+  }
+
+  async paginate(options: IPaginationOptions): Promise<Pagination<Character>> {
+    return paginate<Character>(this.characterRepository, options);
   }
 }
