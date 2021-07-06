@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
-import { Repository } from 'typeorm';
-import { Character } from './entities/character.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Episode } from '../episodes/entities/episode.entity';
+import { BasicEpisode, Episode } from '../episodes/entities/episode.entity';
 import { EpisodesService } from '../episodes/episodes.service';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { paginate } from 'nestjs-typeorm-paginate';
+import { Character } from './entities/character.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CharactersService {
@@ -33,10 +33,18 @@ export class CharactersService {
     return await this.characterRepository.save(newCharacter);
   }
 
-  async findWithEpisodes(): Promise<Character[]> {
+  async findAllDetails(): Promise<Character[]> {
     return await this.characterRepository.find({
       relations: ['episodes'],
     });
+  }
+
+  async findWithEpisodes(): Promise<Character[]> {
+    return this.characterRepository
+      .createQueryBuilder('characters')
+      .leftJoinAndSelect('characters.episodes', 'episodes')
+      .select(['characters.name', 'episodes.name'])
+      .getMany();
   }
 
   async findAll(): Promise<Character[]> {
@@ -72,7 +80,7 @@ export class CharactersService {
     return await this.characterRepository.clear();
   }
 
-  async findOneWithEpisodes(id: number): Promise<Character> {
+  async findOneWithEpisodesDetails(id: number): Promise<Episode[]> {
     const character = await this.characterRepository.findOne(id, {
       relations: ['episodes'],
     });
@@ -82,7 +90,34 @@ export class CharactersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return character;
+    return character.episodes;
+  }
+
+  async findOneWithEpisode(
+    characterId: number,
+    episodeId: number,
+  ): Promise<Episode> {
+    const characterEpisodes: Episode[] = await this.findOneWithEpisodesDetails(
+      characterId,
+    );
+    const episode: Episode = characterEpisodes.find((e) => e.id === episodeId);
+
+    if (!episode) {
+      throw new HttpException(
+        'Episode ID does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return episode;
+  }
+
+  async findOneWithEpisodes(id: number): Promise<BasicEpisode[]> {
+    const characterEpisodesDetails: Episode[] =
+      await this.findOneWithEpisodesDetails(id);
+    return characterEpisodesDetails.reduce(
+      (a, episode) => [...a, { name: episode.name, id: episode.id }],
+      [],
+    );
   }
 
   async addEpisodeToCharacter(
@@ -91,14 +126,13 @@ export class CharactersService {
   ): Promise<Character> {
     const characterToUpdate: Character = await this.findOneById(characterId);
     const episode: Episode = await this.episodesService.findOneById(episodeId);
-    const existingCharactersRelations = await this.findOneWithEpisodes(
-      characterId,
-    );
-    const arrayOfExistingEpisodes = existingCharactersRelations.episodes;
+    const arrayOfExistingEpisodes: Episode[] =
+      await this.findOneWithEpisodesDetails(characterId);
+
     const contains = arrayOfExistingEpisodes.some((e) => e.id === episodeId);
     if (contains) {
       throw new HttpException(
-        'Those episodes are already assign to characters',
+        'This episode is already assign to character',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     } else {
@@ -110,6 +144,9 @@ export class CharactersService {
   }
 
   async paginate(options: IPaginationOptions): Promise<Pagination<Character>> {
-    return paginate<Character>(this.characterRepository, options);
+    const queryBuilder = this.characterRepository
+      .createQueryBuilder('characters')
+      .select(['characters.name', 'characters.id']);
+    return paginate<Character>(queryBuilder, options);
   }
 }

@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+// eslint-disable-next-line
+import { IsInt, IsNotEmpty, Max, MaxLength, Min, MinLength} from 'class-validator';
+import { Optional } from '@nestjs/common';
 
 export class CreateEpisodeDto {
   @ApiProperty()
@@ -7,4 +9,11 @@ export class CreateEpisodeDto {
   @MaxLength(50)
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty()
+  @Optional()
+  @IsInt()
+  @Min(1977)
+  @Max(2999)
+  productionYear: number;
 }

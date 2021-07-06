@@ -1,5 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { PartialType } from '@nestjs/mapped-types';
 
 @Entity({ name: 'episodes' })
 export class Episode {
@@ -8,5 +10,18 @@ export class Episode {
 
   @ApiProperty()
   @Column()
+  name: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  @Optional()
+  productionYear: number;
+}
+
+export class BasicEpisode extends PartialType(Episode) {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
   name: string;
 }

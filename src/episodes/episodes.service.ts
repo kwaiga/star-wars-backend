@@ -3,7 +3,7 @@ import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { UpdateEpisodeDto } from './dto/update-episode.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Episode } from './entities/episode.entity';
+import { BasicEpisode, Episode } from './entities/episode.entity';
 
 @Injectable()
 export class EpisodesService {
@@ -27,8 +27,12 @@ export class EpisodesService {
     return await this.episodeRepository.save(newEpisode);
   }
 
-  async findAll(): Promise<Episode[]> {
-    return await this.episodeRepository.find();
+  async findAll(): Promise<BasicEpisode[]> {
+    const episodes: Episode[] = await this.episodeRepository.find();
+    return episodes.reduce(
+      (e, episode) => [...e, { name: episode.name, id: episode.id }],
+      [],
+    );
   }
 
   async findOneById(id: number): Promise<Episode> {

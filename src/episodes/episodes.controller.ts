@@ -1,17 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
-} from '@nestjs/common';
+// eslint-disable-next-line
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, } from '@nestjs/common';
+// eslint-disable-next-line
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnprocessableEntityResponse, } from '@nestjs/swagger';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { UpdateEpisodeDto } from './dto/update-episode.dto';
-import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BasicEpisode, Episode } from './entities/episode.entity';
 
 @ApiTags('STAR WARS EPISODES')
 @Controller('episodes')
@@ -19,17 +13,22 @@ export class EpisodesController {
   constructor(private readonly episodesService: EpisodesService) {}
 
   @Post()
-  create(@Body() createEpisodeDto: CreateEpisodeDto) {
+  @ApiCreatedResponse({ description: 'Created!' })
+  @ApiBadRequestResponse()
+  @ApiUnprocessableEntityResponse()
+  create(@Body() createEpisodeDto: CreateEpisodeDto): Promise<Episode> {
     return this.episodesService.create(createEpisodeDto);
   }
 
   @Get()
-  findAll() {
+  @ApiOkResponse({ type: [BasicEpisode] })
+  findAll(): Promise<BasicEpisode[]> {
     return this.episodesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  @ApiResponse({ type: Episode })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Episode> {
     return this.episodesService.findOneById(+id);
   }
 
@@ -39,13 +38,13 @@ export class EpisodesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateEpisodeDto: UpdateEpisodeDto,
-  ) {
+  ): Promise<Episode> {
     return this.episodesService.update(+id, updateEpisodeDto);
   }
 
   @Delete(':id')
   @ApiResponse({ status: 200, description: 'Episode deleted successfully' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<Episode> {
     return this.episodesService.remove(+id);
   }
 }
