@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe, } from '@nestjs/common';
 // eslint-disable-next-line
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnprocessableEntityResponse, } from '@nestjs/swagger';
 import { CharactersService } from './characters.service';
@@ -36,13 +36,6 @@ export class CharactersController {
   }
 
   @Get('details')
-  @ApiOkResponse({ type: [Character] })
-  @Get()
-  findAllDetails(): Promise<Character[]> {
-    return this.charactersService.findAllDetails();
-  }
-
-  @Get('episodes')
   @ApiOkResponse({ type: [Character] })
   @Get()
   findWithEpisodes(): Promise<Character[]> {

@@ -40,11 +40,30 @@ export class CharactersService {
   }
 
   async findWithEpisodes(): Promise<Character[]> {
-    return this.characterRepository
-      .createQueryBuilder('characters')
-      .leftJoinAndSelect('characters.episodes', 'episodes')
-      .select(['characters.name', 'episodes.name'])
-      .getMany();
+    const allCharactersWithAllEpisodes: Character[] =
+      await this.characterRepository
+        .createQueryBuilder('characters')
+        .leftJoinAndSelect('characters.episodes', 'episodes')
+        .select(['characters.name', 'characters.race', 'episodes.name'])
+        .getMany();
+
+    function reduceEpisodes(element: Episode[]): any[] {
+      return element.reduce(
+        (element, episode) => [...element, episode.name],
+        [],
+      );
+    }
+
+    const charactersWithEpisodesTiltles = allCharactersWithAllEpisodes.map(
+      (element) => {
+        return {
+          ...element,
+          episodes: reduceEpisodes(element.episodes),
+        };
+      },
+    );
+
+    return charactersWithEpisodesTiltles;
   }
 
   async findAll(): Promise<Character[]> {
