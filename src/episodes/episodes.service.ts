@@ -13,7 +13,7 @@ export class EpisodesService {
   ) {}
 
   async create(createEpisodeDto: CreateEpisodeDto): Promise<Episode> {
-    const episodeByName = await this.episodeRepository.findOne({
+    const episodeByName: Episode = await this.episodeRepository.findOne({
       name: createEpisodeDto.name,
     });
     if (episodeByName) {

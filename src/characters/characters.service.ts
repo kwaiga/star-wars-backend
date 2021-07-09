@@ -33,12 +33,6 @@ export class CharactersService {
     return await this.characterRepository.save(newCharacter);
   }
 
-  async findAllDetails(): Promise<Character[]> {
-    return await this.characterRepository.find({
-      relations: ['episodes'],
-    });
-  }
-
   async findWithEpisodes(): Promise<Character[]> {
     const allCharactersWithAllEpisodes: Character[] =
       await this.characterRepository
@@ -134,7 +128,10 @@ export class CharactersService {
     const characterEpisodesDetails: Episode[] =
       await this.findOneWithEpisodesDetails(id);
     return characterEpisodesDetails.reduce(
-      (a, episode) => [...a, { name: episode.name, id: episode.id }],
+      (element, episode) => [
+        ...element,
+        { name: episode.name, id: episode.id },
+      ],
       [],
     );
   }

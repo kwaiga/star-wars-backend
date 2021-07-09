@@ -24,7 +24,7 @@ export class CharactersController {
 
   @Get()
   @ApiOkResponse({ type: [BasicCharacter] })
-  async index(
+  async getIndexedCharacters(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
   ): Promise<Pagination<BasicCharacter>> {
@@ -37,7 +37,6 @@ export class CharactersController {
 
   @Get('details')
   @ApiOkResponse({ type: [Character] })
-  @Get()
   findWithEpisodes(): Promise<Character[]> {
     return this.charactersService.findWithEpisodes();
   }

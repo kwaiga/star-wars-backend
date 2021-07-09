@@ -1,87 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CharactersService } from './characters.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { CharactersRepositoryMock } from './__mocks__/characters.repository';
+import { Repository } from 'typeorm';
 import { Character } from './entities/character.entity';
-import ormconfig from '../ormconfig';
-import { CreateCharacterDto } from './dto/create-character.dto';
-import { Episode } from '../episodes/entities/episode.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UpdateCharacterDto } from './dto/update-character.dto';
+import { characterStub } from '../../test/stubs/character.stub';
 import { EpisodesService } from '../episodes/episodes.service';
+import { EpisodesServiceMock } from './__mocks__/episodes.service';
 
 describe('CharactersService', () => {
   let service: CharactersService;
+  let episodesService: EpisodesService;
+  let charactersRepository: Repository<Character>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forFeature([Character]),
-        TypeOrmModule.forFeature([Episode]),
-        TypeOrmModule.forRoot(ormconfig),
+      providers: [
+        CharactersService,
+        EpisodesServiceMock,
+        CharactersRepositoryMock,
       ],
-      providers: [CharactersService, EpisodesService],
     }).compile();
 
     service = module.get<CharactersService>(CharactersService);
-    await service.removeAll();
+    episodesService = module.get<EpisodesService>(EpisodesService);
+    charactersRepository = module.get<Repository<Character>>(
+      getRepositoryToken(Character),
+    );
   });
 
-  afterEach(async () => {
-    // await service.removeAll();
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
-  it('Should find created character', async () => {
-    const createCharacterDto: CreateCharacterDto = {
-      name: 'Han Solo',
-      race: 'human',
-    };
-    await service.create(createCharacterDto);
-    const resultArr: Character[] = await service.findAll();
-    expect(resultArr.length).toEqual(1);
-    expect(resultArr[0].id).toBeDefined();
-    expect(resultArr[0].name).toEqual('Han Solo');
-    expect(resultArr[0].race).toEqual('human');
-  });
+  describe('Update', () => {
+    let updateDto: UpdateCharacterDto;
+    it('When update from service is called then save from repository method should be called', async () => {
+      await service.update(1, updateDto);
+      expect(charactersRepository.save).toHaveBeenCalled();
+    });
 
-  it('Fill out db', async () => {
-    const createCharacterDto: CreateCharacterDto = {
-      name: 'Chewbacca',
-      race: 'wookie',
-    };
-    await service.create(createCharacterDto);
-
-    const yoda: CreateCharacterDto = {
-      name: 'yoda',
-      race: 'tridactyl',
-    };
-    await service.create(yoda);
-
-    const hanSolo: CreateCharacterDto = {
-      name: 'Han Solo',
-      race: 'human',
-    };
-    await service.create(hanSolo);
-
-    const stormtrooper: CreateCharacterDto = {
-      name: 'Stormtrooper',
-      race: 'human',
-    };
-    await service.create(stormtrooper);
-
-    const stormtrooper2: CreateCharacterDto = {
-      name: 'Stormtrooper2',
-      race: 'human',
-    };
-    await service.create(stormtrooper2);
-
-    const stormtrooper3: CreateCharacterDto = {
-      name: 'Stormtrooper3',
-      race: 'human',
-    };
-    await service.create(stormtrooper3);
-
-    const stormtrooper4: CreateCharacterDto = {
-      name: 'Stormtrooper4',
-      race: 'human',
-    };
-    await service.create(stormtrooper4);
+    it('When update from service is called with any argument then I should retrieve what I hardcoded in repository mock', async () => {
+      expect(await service.update(3, updateDto)).toStrictEqual(characterStub());
+    });
   });
 });

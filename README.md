@@ -31,7 +31,7 @@ $ npm run start
 # watch mode
 $ npm run start:dev
 
-# production mode - not handled yet
+# production mode 
 $ npm run start:prod
 
 # database migration

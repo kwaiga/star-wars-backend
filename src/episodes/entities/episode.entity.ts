@@ -13,8 +13,7 @@ export class Episode {
   name: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
-  @Optional()
+  @Column()
   productionYear: number;
 }
 

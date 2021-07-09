@@ -1,10 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+// eslint-disable-next-line
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Episode } from '../../episodes/entities/episode.entity';
 import { PartialType } from '@nestjs/mapped-types';
@@ -25,7 +20,7 @@ export class Character {
   @ManyToMany((type) => Episode, (episode) => episode.name, {})
   @ApiProperty()
   @JoinTable({ name: 'episodeNames' })
-  episodes: Episode[];
+  episodes?: Episode[];
 }
 
 export class BasicCharacter extends PartialType(Character) {
