@@ -2,7 +2,7 @@ import { CharactersService } from './characters.service';
 import { CharactersController } from './characters.controller';
 import { Character } from './entities/character.entity';
 import { Test } from '@nestjs/testing';
-import { CharacterServiceMock } from './__mocks__/characters.service';
+import { CharacterServiceMock } from '../../test/__mocks__/characters.service';
 import { characterStub } from '../../test/stubs/character.stub';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { paginateStub } from '../../test/stubs/paginate.stub';

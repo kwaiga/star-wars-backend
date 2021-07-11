@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CharactersService } from './characters.service';
-import { CharactersRepositoryMock } from './__mocks__/characters.repository';
+import { CharactersRepositoryMock } from '../../test/__mocks__/characters.repository';
 import { Repository } from 'typeorm';
 import { Character } from './entities/character.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UpdateCharacterDto } from './dto/update-character.dto';
 import { characterStub } from '../../test/stubs/character.stub';
 import { EpisodesService } from '../episodes/episodes.service';
-import { EpisodesServiceMock } from './__mocks__/episodes.service';
+import { EpisodesServiceMock } from '../../test/__mocks__/episodes.service';
 
 describe('CharactersService', () => {
   let service: CharactersService;

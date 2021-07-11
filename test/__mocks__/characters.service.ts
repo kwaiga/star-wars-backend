@@ -1,8 +1,8 @@
-import { CharactersService } from '../characters.service';
-import { characterStub } from '../../../test/stubs/character.stub';
-import { paginateStub } from '../../../test/stubs/paginate.stub';
-import { baseEpisodeStub } from '../../../test/stubs/base-episode.stub';
-import { episodeStub } from '../../../test/stubs/episode.stub';
+import { CharactersService } from '../../src/characters/characters.service';
+import { characterStub } from '../stubs/character.stub';
+import { paginateStub } from '../stubs/paginate.stub';
+import { baseEpisodeStub } from '../stubs/base-episode.stub';
+import { episodeStub } from '../stubs/episode.stub';
 
 export const CharacterServiceMock = {
   provide: CharactersService,

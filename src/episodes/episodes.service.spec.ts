@@ -3,7 +3,7 @@ import { EpisodesService } from './episodes.service';
 
 import { Repository } from 'typeorm';
 import { Episode } from './entities/episode.entity';
-import { EpisodesRepositoryMock } from '../characters/__mocks__/episodes.repository';
+import { EpisodesRepositoryMock } from '../../test/__mocks__/episodes.repository';
 import { episodeStub } from '../../test/stubs/episode.stub';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { baseEpisodeStub } from '../../test/stubs/base-episode.stub';

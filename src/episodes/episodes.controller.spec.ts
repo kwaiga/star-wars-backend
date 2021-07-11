@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { EpisodesController } from './episodes.controller';
 import { EpisodesService } from './episodes.service';
-import { EpisodesServiceMock } from '../characters/__mocks__/episodes.service';
+import { EpisodesServiceMock } from '../../test/__mocks__/episodes.service';
 import { episodeStub } from '../../test/stubs/episode.stub';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { baseEpisodeStub } from '../../test/stubs/base-episode.stub';

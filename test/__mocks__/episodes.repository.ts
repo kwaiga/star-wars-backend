@@ -1,6 +1,6 @@
-import { episodeStub } from '../../../test/stubs/episode.stub';
+import { episodeStub } from '../stubs/episode.stub';
 
-import { Episode } from '../../episodes/entities/episode.entity';
+import { Episode } from '../../src/episodes/entities/episode.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntitySchemaOptions } from 'typeorm/entity-schema/EntitySchemaOptions';
 

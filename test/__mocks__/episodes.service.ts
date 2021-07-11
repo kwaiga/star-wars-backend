@@ -1,6 +1,6 @@
-import { EpisodesService } from '../../episodes/episodes.service';
-import { episodeStub } from '../../../test/stubs/episode.stub';
-import { baseEpisodeStub } from '../../../test/stubs/base-episode.stub';
+import { EpisodesService } from '../../src/episodes/episodes.service';
+import { episodeStub } from '../stubs/episode.stub';
+import { baseEpisodeStub } from '../stubs/base-episode.stub';
 
 export const EpisodesServiceMock = {
   provide: EpisodesService,
