@@ -89,10 +89,6 @@ export class CharactersService {
     return await this.characterRepository.remove(character);
   }
 
-  async removeAll(): Promise<void> {
-    return await this.characterRepository.clear();
-  }
-
   async findOneWithEpisodesDetails(id: number): Promise<Episode[]> {
     const character = await this.characterRepository.findOne(id, {
       relations: ['episodes'],
@@ -164,5 +160,12 @@ export class CharactersService {
       .createQueryBuilder('characters')
       .select(['characters.name', 'characters.id']);
     return paginate<Character>(queryBuilder, options);
+  }
+
+  async removeAll(): Promise<void> {
+    const characters: Character[] = await this.characterRepository.find();
+    for (const values of characters) {
+      await this.remove(values.id);
+    }
   }
 }

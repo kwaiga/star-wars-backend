@@ -61,6 +61,9 @@ export class EpisodesService {
   }
 
   async removeAll(): Promise<void> {
-    return await this.episodeRepository.clear();
+    const episodes: Episode[] = await this.episodeRepository.find();
+    for (const values of episodes) {
+      await this.remove(values.id);
+    }
   }
 }
