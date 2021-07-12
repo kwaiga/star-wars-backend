@@ -1,11 +1,12 @@
 // eslint-disable-next-line
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UsePipes } from '@nestjs/common';
 // eslint-disable-next-line
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnprocessableEntityResponse, } from '@nestjs/swagger';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { UpdateEpisodeDto } from './dto/update-episode.dto';
 import { BasicEpisode, Episode } from './entities/episode.entity';
+import { UpperCasePipe } from '../app.pipes';
 
 @ApiTags('STAR WARS EPISODES')
 @Controller('episodes')
@@ -16,6 +17,7 @@ export class EpisodesController {
   @ApiCreatedResponse({ description: 'Created!' })
   @ApiBadRequestResponse()
   @ApiUnprocessableEntityResponse()
+  @UsePipes(new UpperCasePipe())
   create(@Body() createEpisodeDto: CreateEpisodeDto): Promise<Episode> {
     return this.episodesService.create(createEpisodeDto);
   }

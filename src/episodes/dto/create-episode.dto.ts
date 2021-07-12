@@ -9,7 +9,7 @@ export class CreateEpisodeDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({example:2000})
   @IsInt()
   @Min(1977)
   @Max(2999)

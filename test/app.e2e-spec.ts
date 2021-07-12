@@ -71,7 +71,7 @@ describe('Test full flow of adding episodes to characters', () => {
 
     it('should successfully post episode', (done) => {
       const newEpisode: CreateEpisodeDto = {
-        name: 'HAN SOLO FIGHTS SOLO',
+        name: 'Han Solo fights solo',
         productionYear: 2056,
       };
       chai
