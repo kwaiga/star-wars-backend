@@ -38,10 +38,11 @@ describe('Smoke checks', () => {
       });
   });
 
-  it('should return proper info of pagination', (done) => {
+  it('should return proper info of pagination and within correct limit', (done) => {
     chai
       .request(`${LOCAL_DEV_URL}/characters`)
       .get('/')
+      .query({ limit: 21 })
       .end((err, res) => {
         expect(res.body.items).to.exist;
         expect(res.body.meta).to.exist;
@@ -50,6 +51,7 @@ describe('Smoke checks', () => {
         expect(res.body.meta.itemCount).to.exist;
         expect(res.body.meta.currentPage).to.exist;
         expect(res.body.meta.itemsPerPage).to.exist;
+        expect(res.body.meta.itemsPerPage).to.be.equal(20);
         expect(res).to.have.status(200);
         done();
       });

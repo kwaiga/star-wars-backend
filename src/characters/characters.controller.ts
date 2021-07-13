@@ -26,9 +26,9 @@ export class CharactersController {
   @ApiOkResponse({ type: [BasicCharacter] })
   async getIndexedCharacters(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ): Promise<Pagination<BasicCharacter>> {
-    limit = limit > 10 ? 10 : limit;
+    limit = Math.min(limit, 20);
     return this.charactersService.paginate({
       page,
       limit,
