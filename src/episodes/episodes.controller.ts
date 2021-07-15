@@ -6,7 +6,7 @@ import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { UpdateEpisodeDto } from './dto/update-episode.dto';
 import { BasicEpisode, Episode } from './entities/episode.entity';
-import { UpperCasePipe } from '../app.pipes';
+import { UpperCasePipe } from '../pipes/upper-case.pipe';
 
 @ApiTags('STAR WARS EPISODES')
 @Controller('episodes')

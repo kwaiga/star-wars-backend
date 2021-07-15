@@ -1,13 +1,14 @@
 // eslint-disable-next-line
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe, } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe, UsePipes } from '@nestjs/common';
 // eslint-disable-next-line
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnprocessableEntityResponse, } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnprocessableEntityResponse, ApiQuery} from '@nestjs/swagger';
 import { CharactersService } from './characters.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
 import { BasicCharacter, Character } from './entities/character.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { BasicEpisode, Episode } from '../episodes/entities/episode.entity';
+import { PositiveIntPipe } from '../pipes/positive-int-pipe';
 
 @ApiTags('STAR WARS CHARACTERS')
 @Controller('characters')
@@ -24,9 +25,19 @@ export class CharactersController {
 
   @Get()
   @ApiOkResponse({ type: [BasicCharacter] })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 10,
+    description: 'Max limit is 20',
+  })
+  @UsePipes(new PositiveIntPipe())
   async getIndexedCharacters(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe, PositiveIntPipe)
+    page = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe, PositiveIntPipe)
+    limit = 20,
   ): Promise<Pagination<BasicCharacter>> {
     limit = Math.min(limit, 20);
     return this.charactersService.paginate({
