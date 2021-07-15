@@ -45,8 +45,6 @@ describe('Test full flow of adding episodes to characters', () => {
       race: 'Unknown humanoid',
     };
 
-    await episodesService.removeAll();
-    await charactersService.removeAll();
     await episodesService.create(episodeDto1);
     await episodesService.create(episodeDto2);
     await charactersService.create(characterDto);
@@ -65,6 +63,20 @@ describe('Test full flow of adding episodes to characters', () => {
           expect(res.body[1].name).to.be.equal('CHEWBACCA AWAKENS');
           expect(res.body[0].id).to.exist;
           expect(res.body[1].id).to.exist;
+          done();
+        });
+    });
+    it('should get details about given episode', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/episodes`)
+        .get('/1')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.eql({
+            id: 1,
+            name: 'YODA THE FINAL REVENGE',
+            productionYear: 2000,
+          });
           done();
         });
     });
@@ -90,20 +102,6 @@ describe('Test full flow of adding episodes to characters', () => {
   });
 
   describe('Characters', () => {
-    it('should get all characters', (done) => {
-      chai
-        .request(`${LOCAL_DEV_URL}/characters`)
-        .get('/details')
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res).to.be.json;
-          expect(res.body).to.have.length(1);
-          expect(res.body[0].name).to.be.equal('Baby Yoda');
-          expect(res.body[0].race).to.be.equal('Unknown humanoid');
-          expect(res.body[0].episodes).to.be.empty;
-          done();
-        });
-    });
     it('should successfully post character', (done) => {
       const newCharacter: CreateCharacterDto = {
         name: 'Sheev Palpatine',
@@ -122,38 +120,110 @@ describe('Test full flow of adding episodes to characters', () => {
           done();
         });
     });
+    it('should get details about given character', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .get('/1')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.eql({
+            id: 1,
+            name: 'Baby Yoda',
+            race: 'Unknown humanoid',
+          });
+          done();
+        });
+    });
+    it('should get all characters including last added one', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .get('/')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body.items[0].name).to.equal('Baby Yoda');
+          expect(res.body.items[1].name).to.equal('Sheev Palpatine');
+          done();
+        });
+    });
   });
 
   describe('Add Episode to character', () => {
-    let epId;
-    let charId;
-    it('Should succesfully add  episode to character', (done) => {
-      //Check episode ID
+    it('should successfully add  episode to character', (done) => {
       chai
-        .request(`${LOCAL_DEV_URL}/episodes`)
-        .get('/')
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .post(`/1/episodes/2`)
         .end((err, res) => {
-          epId = res.body[0].id;
-          //Check character ID
-          chai
-            .request(`${LOCAL_DEV_URL}/characters`)
-            .get('/')
-            .end((err, res) => {
-              charId = res.body.items[0].id;
-              //Check if proper episode have proper character
-              chai
-                .request(`${LOCAL_DEV_URL}/characters`)
-                .post(`/${charId}/episodes/${epId}`)
-                .end((err, res) => {
-                  expect(res).to.have.status(201);
-                  expect(res.body.name).to.be.equal('Baby Yoda');
-                  expect(res.body.episodes[0].name).to.be.equal(
-                    'YODA THE FINAL REVENGE',
-                  );
-                  done();
-                });
-              done();
-            });
+          expect(res).to.have.status(201);
+          expect(res.body).to.eql({
+            id: 1,
+            name: 'Baby Yoda',
+            race: 'Unknown humanoid',
+            episodes: [
+              { id: 2, name: 'CHEWBACCA AWAKENS', productionYear: 2090 },
+            ],
+          });
+          done();
+        });
+    });
+    it('should successfully add second episode to character', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .post(`/1/episodes/3`)
+        .end((err, res) => {
+          expect(res).to.have.status(201);
+          done();
+        });
+    });
+
+    it('should display all episodes added to given character', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .get('/1/episodes')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.have.length(2);
+          expect(res.body).to.eql([
+            { name: 'CHEWBACCA AWAKENS', id: 2 },
+            { name: 'HAN SOLO FIGHTS SOLO', id: 3 },
+          ]);
+          done();
+        });
+    });
+    it('should display details of specific episode attached to given character', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .get('/1/episodes/3')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.eql({
+            id: 3,
+            name: 'HAN SOLO FIGHTS SOLO',
+            productionYear: 2056,
+          });
+          done();
+        });
+    });
+    it('should display all characters with details including info of episodes', (done) => {
+      chai
+        .request(`${LOCAL_DEV_URL}/characters`)
+        .get('/details')
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.eql([
+            {
+              name: 'Baby Yoda',
+              race: 'Unknown humanoid',
+              episodes: ['CHEWBACCA AWAKENS', 'HAN SOLO FIGHTS SOLO'],
+            },
+            {
+              name: 'Sheev Palpatine',
+              race: 'human',
+              episodes: [],
+            },
+          ]);
           done();
         });
     });
